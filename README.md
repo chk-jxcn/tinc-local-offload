@@ -46,7 +46,7 @@ iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 修改的tinc代码：
 - 增加tun1设备
 - 使用https://github.com/chuckination/lctrie 来进行目标地址匹配(Intel 3205U测试，单线程匹配5000条国内子网表，大概10Mqps，对于大部分机器来说都不是瓶颈了)
-- 移植freebsd下的libalias(https://wiki.freebsd.org/Libalias)来执行NAT（不执行NAT也可以，但是iptables似乎无法正确在出口对tun0进来的包进行NAT）
+- 移植freebsd下的libalias(https://wiki.freebsd.org/Libalias) 来执行NAT（不执行NAT也可以，但是iptables似乎无法正确在出口对tun0进来的包进行NAT）
 
 ## 遇到的问题
 * tinc-1.1pre17无法在freebsd链接libz，需要删除__nonull__的定义 （bug of tinc）
