@@ -55,3 +55,11 @@ iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 * libalias 中检测头文件是否包含的宏与linux头文件定义不一致
 * libalias 中的ip, tcp, udp等结构与linux中定义不一致，引入宏定义 -DNO_FW_PUNCH -D_BSD_SOURCE -D__BSD_SOURCE -D__FAVOR_BSD
 * chinadns 实现中的upstream DNS server会根据IP来决定是否Trusted，修改为全部Untrusted(因为需要使用内网dns服务器进行缓存)
+
+最后的最后，如果使用源地址路由的话，请修改下面的系统配置：
+```
+# 不添加iptables出口NAT不正常
+for x in `ls  /proc/sys/net/ipv4/conf/*/accept_source_route`; do echo 1 > $x ; done
+# 不添加则系统会丢弃tun0接收到的报文
+for x in `ls  /proc/sys/net/ipv4/conf/*/rp_filter`; do echo 0 > $x ; done
+```
