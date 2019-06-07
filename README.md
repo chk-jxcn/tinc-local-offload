@@ -63,3 +63,6 @@ for x in `ls  /proc/sys/net/ipv4/conf/*/accept_source_route`; do echo 1 > $x ; d
 # 不添加则系统会丢弃tun0接收到的报文
 for x in `ls  /proc/sys/net/ipv4/conf/*/rp_filter`; do echo 0 > $x ; done
 ```
+
+## New idea
+将tun0 修改成tap与出口网口进行桥接，内置dhcp client，就不再需要源地址路由了。
