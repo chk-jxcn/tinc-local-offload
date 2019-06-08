@@ -1,0 +1,10 @@
+#!/bin/sh
+
+. "${0%/*}/testlib.sh"
+
+# Just test whether the executables work
+$tincd --help
+$tinc --help
+if [ -e $sptps_test ]; then
+	$sptps_test --help
+fi

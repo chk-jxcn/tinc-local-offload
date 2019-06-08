@@ -1,0 +1,41 @@
+ed25519/verify.o: ed25519/verify.c /usr/include/stdc-predef.h \
+ ed25519/ed25519.h \
+ /usr/lib/gcc/x86_64-redhat-linux/4.8.5/include/stddef.h ed25519/sha512.h \
+ ed25519/fixedint.h \
+ /usr/lib/gcc/x86_64-redhat-linux/4.8.5/include/stdint.h \
+ /usr/include/stdint.h /usr/include/features.h /usr/include/sys/cdefs.h \
+ /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
+ /usr/include/gnu/stubs-64.h /usr/include/bits/wchar.h ed25519/ge.h \
+ ed25519/fe.h ed25519/sc.h
+
+/usr/include/stdc-predef.h:
+
+ed25519/ed25519.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include/stddef.h:
+
+ed25519/sha512.h:
+
+ed25519/fixedint.h:
+
+/usr/lib/gcc/x86_64-redhat-linux/4.8.5/include/stdint.h:
+
+/usr/include/stdint.h:
+
+/usr/include/features.h:
+
+/usr/include/sys/cdefs.h:
+
+/usr/include/bits/wordsize.h:
+
+/usr/include/gnu/stubs.h:
+
+/usr/include/gnu/stubs-64.h:
+
+/usr/include/bits/wchar.h:
+
+ed25519/ge.h:
+
+ed25519/fe.h:
+
+ed25519/sc.h:
