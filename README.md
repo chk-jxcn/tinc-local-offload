@@ -66,3 +66,77 @@ for x in `ls  /proc/sys/net/ipv4/conf/*/rp_filter`; do echo 0 > $x ; done
 
 ## New idea
 将tun0 修改成tap与出口网口进行桥接，内置dhcp client，就不再需要源地址路由了。
+
+
+# 透明转发方案
+## 拓扑图
+![alt text](https://raw.githubusercontent.com/chk-jxcn/tinc-local-offload/master/2.png)
+
+```
+tap1/tun1	for offload data
+tun0		for local access
+tap0		for remote access
+
+Process step:
+remote data -> tap0 -> if match china -> send to tap1/tun1
+                    -> if not match china -> NAT and send outside
+
+Local data -> tun0  -> if match china -> send to tap1/tun1
+                    -> if not match china -> send outside
+		    
+VPN -> tinc -> try de-alias to tap0 -> success -> send to tap0
+                                    -> fail -> send to tun0
+
+From china -> tap1/tun1 -> de-alias -> if dest addr = tun0 -> tun0
+                                    -> else -> tap0
+				    
+For example:
+LAN = 192.168.200.0/24
+tap0 = 192.168.200.2
+tun0 = 192.168.192.211
+tap1 = 192.168.1.2
+tap0 gateway = 192.168.1.1
+
+packet flow:
+To VPN
+
+                 tap0                      tinc                    VPN(other node)
+request 192.168.200.3->8.8.8.8
+                                 192.168.192.210->8.8.8.8
+				                              192.168.192.210->8.8.8.8
+reply:							      8.8.8.8->192.168.192.210
+				 8.8.8.8->192.168.192.210			      
+	8.8.8.8->192.168.200.3						      
+							      
+
+                 tun0                      tinc                    VPN(other node)
+request 192.168.192.211->8.8.8.8
+                                 192.168.192.211->8.8.8.8
+				                              192.168.192.211->8.8.8.8
+reply:							      8.8.8.8->192.168.192.211
+				 8.8.8.8->192.168.192.211			      
+	8.8.8.8->192.168.192.211
+
+To china
+							      
+                 tap0                      tinc                    tap1/tun1
+request 192.168.200.3->114.114.114.114
+                                 192.168.200.3->114.114.114.114
+				                              192.168.1.2->114.114.114.114
+reply:							      114.114.114.114->192.168.1.2
+				 114.114.114.114->192.168.200.3			      
+	114.114.114.114->192.168.200.3						      
+							      
+
+                 tun0                      tinc                    tap1/tun1
+request 192.168.192.211->114.114.114.114
+                                 192.168.192.211->114.114.114.114
+				                              192.168.1.2->114.114.114.114
+reply:							      114.114.114.114->192.168.1.2
+				 114.114.114.114->192.168.192.211			      
+	114.114.114.114->192.168.192.211
+```
+
+需要处理的问题：
+1. 对tinc内部接口的ICMP的返回
+2. 请求目标地址的arp并存储，但是不需要响应arp查询，系统会自动处理这部分
