@@ -64,6 +64,56 @@ for x in `ls  /proc/sys/net/ipv4/conf/*/accept_source_route`; do echo 1 > $x ; d
 for x in `ls  /proc/sys/net/ipv4/conf/*/rp_filter`; do echo 0 > $x ; done
 ```
 
+## NAT性能测试
+tun1 是本地卸载端口
+
+tun0 为入口
+```
+                    /0   /1   /2   /3   /4   /5   /6   /7   /8   /9   /10
+     Load Average   |||
+
+      Interface           Traffic               Peak                Total
+            ng0  in    197.185 KB/s        204.577 KB/s          100.123 MB
+                 out     4.938 MB/s          5.104 MB/s            1.323 GB
+
+           tun1  in    197.118 KB/s        204.297 KB/s           84.025 MB
+                 out     5.669 MB/s          5.862 MB/s          654.152 MB
+
+           tun0  in      5.653 MB/s          5.846 MB/s            2.072 GB
+                 out   209.493 KB/s        217.079 KB/s          176.669 MB
+
+          ue0.3  in      0.000 KB/s          1.372 KB/s            1.530 GB
+                 out     0.000 KB/s          1.243 KB/s            1.447 GB
+
+            ue0  in      5.977 MB/s          6.188 MB/s           24.051 GB
+                 out     5.210 MB/s          5.385 MB/s           24.024 GB
+
+            lo0  in      0.000 KB/s          0.000 KB/s            9.403 MB
+                 out     0.000 KB/s          0.000 KB/s            9.403 MB
+```
+
+usb用的cpu多是因为树莓派的网口其实是挂在usb下面
+
+基本上50Mbps就是极限了，本身网口也只是100M的
+
+```
+                    /0   /1   /2   /3   /4   /5   /6   /7   /8   /9   /10
+     Load Average   |||||||
+
+                    /0%  /10  /20  /30  /40  /50  /60  /70  /80  /90  /100
+root          tincd XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+root           idle XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+root            usb XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+root           idle XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+root           idle XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+root           idle XXXXXXXXXXXXXXXXXXXXXXXXX
+root     rand_harve X
+root           intr X
+```
+
+
+
+
 ## New idea
 将tun0 修改成tap与出口网口进行桥接，内置dhcp client，就不再需要源地址路由了。
 
