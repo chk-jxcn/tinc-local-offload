@@ -183,7 +183,8 @@ void do_autoconnect() {
 
 	/* More than 3 connections? See if we can get rid of a superfluous one. */
 	if(nc > 3) {
-		drop_superfluous_outgoing_connection();
+		// Don't dump connections
+		//drop_superfluous_outgoing_connection();
 	}
 
 
