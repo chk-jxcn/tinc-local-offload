@@ -111,7 +111,38 @@ root     rand_harve X
 root           intr X
 ```
 
+## 一个月后
+基本上可以一直开着，打游戏延迟正常，淘宝优酷正常
 
+ng0是pppoe接口，我一般用pppoe拨号来从PC连接到本地VPN，可以保证易用性和以及在PC上稳定的路由
+
+ue0.3是提供vpn的vlan接口
+
+至于如何让不同的设备来无缝连接VPN，又是另外一个故事了。
+
+另外TAP方案已经放弃了（太过繁琐）
+```
+                    /0   /1   /2   /3   /4   /5   /6   /7   /8   /9   /10
+     Load Average
+
+      Interface           Traffic               Peak                Total
+            ng0  in      0.179 KB/s          0.350 KB/s            7.424 MB
+                 out     0.140 KB/s          2.591 KB/s           45.293 MB
+
+           tun1  in      0.132 KB/s          0.282 KB/s            4.928 GB
+                 out     0.052 KB/s          0.119 KB/s           62.587 GB
+
+           tun0  in      0.140 KB/s          2.591 KB/s          100.533 GB
+                 out     0.188 KB/s          0.836 KB/s           59.464 GB
+
+          ue0.3  in      0.000 KB/s          0.416 KB/s           10.125 GB
+                 out     0.000 KB/s          0.323 KB/s            9.604 GB
+
+            ue0  in      0.673 KB/s          3.643 KB/s          174.907 GB
+                 out     0.703 KB/s          3.599 KB/s          194.651 GB
+
+
+```
 
 
 ## New idea
