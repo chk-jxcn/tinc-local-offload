@@ -1,3 +1,4 @@
+CLFLAGS="-O3"
 LIB = libalias.a
 OBJS = nat.o alias_ftp.o alias.o alias_db.o alias_proxy.o alias_util.o alias_mod.o arc4random.o
 

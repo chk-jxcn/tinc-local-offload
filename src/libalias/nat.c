@@ -14,7 +14,7 @@ void nat_init(struct in_addr addr)
         return;
 
     LibAliasSetAddress(la, addr);
-    LibAliasAttachHandlers(handlers_ftp);
+    //LibAliasAttachHandlers(handlers_ftp);
     success = 1;
 }
 

@@ -182,6 +182,7 @@ endif
 if BSD
 tincd_SOURCES += bsd/device.c
 tincd_SOURCES += bsd/device_local.c
+tincd_SOURCES += libalias/nat.c
 if TUNEMU
 tincd_SOURCES += bsd/tunemu.c bsd/tunemu.h
 endif
@@ -286,7 +287,12 @@ sptps_speed_LDADD = -lrt
 
 LIBS = @LIBS@ -lm $(CODE_COVERAGE_LIBS)
 LIBS += -lpcre
+if LINUX
 LIBS += -Llibalias -lalias
+endif
+if BSD
+LIBS +=  -lalias
+endif
 
 if TUNEMU
 LIBS += -lpcap

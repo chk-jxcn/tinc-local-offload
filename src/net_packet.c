@@ -611,11 +611,15 @@ static void send_sptps_packet(node_t *n, vpn_packet_t *origpkt) {
 	   don't bother with SPTPS and just use a "plaintext" PACKET message.
 	   We don't really care about end-to-end security since we're not
 	   sending the message through any intermediate nodes. */
+	/* always send via sptps because we want the DSTID store in packet */
+	sptps_send_record(&n->sptps, type, DATA(origpkt) + offset, origpkt->len - offset);
+	/*
 	if(n->connection && origpkt->len > n->minmtu) {
 		send_tcppacket(n->connection, origpkt);
 	} else {
 		sptps_send_record(&n->sptps, type, DATA(origpkt) + offset, origpkt->len - offset);
 	}
+	*/
 
 	return;
 }
@@ -1055,8 +1059,11 @@ bool receive_sptps_record(void *handle, uint8_t type, const void *data, uint16_t
 	if(from->status.udppacket && inpkt.len > from->maxrecentlen) {
 		from->maxrecentlen = inpkt.len;
 	}
-
-	receive_packet(from, &inpkt);
+	
+	/* if packet receive from sptps, and to = myself, then it must be send to myself
+	 * Not safe although */
+	send_packet(myself, &inpkt);
+	//receive_packet(from, &inpkt);
 	return true;
 }
 
@@ -1367,9 +1374,11 @@ static void try_tx_sptps(node_t *n, bool mtu) {
 	/* If n is a TCP-only neighbor, we'll only use "cleartext" PACKET
 	   messages anyway, so there's no need for SPTPS at all. */
 
+	/*
 	if(n->connection && ((myself->options | n->options) & OPTION_TCPONLY)) {
 		return;
 	}
+	*/
 
 	/* Otherwise, try to do SPTPS authentication with n if necessary. */
 

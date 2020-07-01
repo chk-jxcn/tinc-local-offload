@@ -1076,7 +1076,6 @@ static bool setup_myself(void) {
 		return false;
 	}
 
-	reload_route_table();
 	if (lookup_config(config_tree, "DeviceLocal")) {
 		if (!os_devops_local.setup()) {
 			return false;
@@ -1256,6 +1255,8 @@ bool setup_network(void) {
 		maxoutbufsize = 10 * MTU;
 	}
 
+	reload_route_table();
+
 	if(!setup_myself()) {
 		return false;
 	}
@@ -1330,8 +1331,7 @@ void close_network_connections(void) {
 	
 	if(device_fd_local >= 0) {
 		os_devops_local.close();
-		clean_localoffload();
-        io_del(&device_io);
+		io_del(&device_io);
 	}
 
 	exit_control();

@@ -33,6 +33,7 @@
 #include "subnet.h"
 #include "utils.h"
 #include "device.h"
+#include "lctrie_tinc.h"
 
 #include "nat.h"
 
@@ -626,6 +627,7 @@ static void fragment_ipv4_packet(node_t *dest, vpn_packet_t *packet, length_t et
 	}
 }
 
+extern node_t *default_node;
 static void route_ipv4(node_t *source, vpn_packet_t *packet) {
 	uint32_t type = 0;
 	if(!checklength(source, packet, ether_size + ip_size)) {
@@ -638,14 +640,14 @@ static void route_ipv4(node_t *source, vpn_packet_t *packet) {
 	memcpy(&dest, &DATA(packet)[30], sizeof(dest));
 	
 	// first search local route
-	node_t *n = lct_route(address, &type);
-	if (*type == IP_SUBNET_TINC_LOCAL) {
+	node_t *n = lct_route(dest, &type);
+	if (type == IP_SUBNET_TINC_LOCAL) {
 		if (source == myself) {
 			nat_out(&DATA(packet)[14], MTU - 14);
 			os_devops_local.write(packet);
 			return;	
 		}
-	} else if (*type == IP_SUBNET_TINC_ROUTE) {
+	} else if (type == IP_SUBNET_TINC_ROUTE) {
 		if (n) {
 			subnet = alloca(sizeof(subnet_t));
 			subnet->owner = n;

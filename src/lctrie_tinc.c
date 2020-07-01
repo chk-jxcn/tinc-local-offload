@@ -24,12 +24,15 @@
 
 #include "lctrie/lctrie_ip.h"
 #include "lctrie/lctrie.h"
+#include "lctrie_tinc.h"
+#include <pcre.h>
+
 
 static lct_t* t;
 static lct_subnet_t *p;
 static splay_tree_t *node_in_route;
 static char *default_nodename;
-note_t *default_node;
+node_t *default_node;
 
 #define BGP_MAX_ENTRIES 400000
 
@@ -63,7 +66,7 @@ static void insert_route_node(lct_tinc_route_t *r)
 	splay_insert(node_in_route, r);
 }
 
-static int load_from_file(char *file, lct_subnet_info_t *info, uint32_t *current_num, uint32_t *max_num)
+static int load_from_file(char *filename, lct_subnet_info_t *info, uint32_t *current_num, uint32_t *max_num)
 {
 	uint32_t num = *current_num;
 	const char *pattern = "^((\\d{1,3}\\.){3}\\d{1,3})\\/(\\d{1,2})";
@@ -74,6 +77,7 @@ static int load_from_file(char *file, lct_subnet_info_t *info, uint32_t *current
 	char input[INET_ADDRSTRLEN];
 	char *substr_start;
 	int substr_len;
+	int rc;
 
 	const char *error;
 	int erroffset;
@@ -147,7 +151,7 @@ static int load_from_file(char *file, lct_subnet_info_t *info, uint32_t *current
 	}
 	uint32_t num_this = num - *current_num;
 	if (info->type == IP_SUBNET_TINC_ROUTE) {
-		(lct_tinc_route_t*)(info->user)->num = num_this;
+		((lct_tinc_route_t *)info->usr.data)->num = num_this;
 	}
 	*current_num = num;
 
@@ -178,7 +182,6 @@ int reload_route_table()
 	char *local_offload_file;
 	uint32_t subnet_num = 0;
 	uint32_t max_subnet = BGP_MAX_ENTRIES;
-	setlocale(LC_NUMERIC, "");
 
 	if (t != NULL) {
 		lct_free(t);
@@ -191,7 +194,8 @@ int reload_route_table()
 	p = (lct_subnet_t *)calloc(sizeof(lct_subnet_t), max_subnet);
 
 	if (node_in_route != NULL) {
-		splay_delete_tree(node_tree);
+		splay_delete_tree(node_in_route);
+		node_in_route = NULL;
 	}
 
 	if (default_nodename != NULL) {
@@ -241,9 +245,9 @@ int reload_route_table()
 		snprintf(fname, sizeof(fname), "%s" SLASH "%s", dname, ent->d_name);
 		load_from_file(fname, &info, &subnet_num, &max_subnet);
 	}
-	if (*subnet_num > 0) {
+	if (subnet_num > 0) {
 		t = calloc(sizeof(lct_t), 1);
-		build_lct(*subnet_num);
+		build_lct(subnet_num);
 	}
 
 }
@@ -251,7 +255,7 @@ int reload_route_table()
 node_t* lct_route(ipv4_t address, uint32_t *type)
 {
 	lct_subnet_t *subnet = NULL;
-	uint32_t dest = ntohl(address);
+	uint32_t dest = ntohl(*(uint32_t*)address.x);
 	
 	if (!t) {
 		return NULL;
@@ -262,13 +266,13 @@ node_t* lct_route(ipv4_t address, uint32_t *type)
 		return NULL;
 	}
 	*type = subnet->info.type;
-	if(*type == IP_SUBNET_TINC_LOCAL) {
-		lct_tinc_route_t *r = (lct_tinc_route_t *)subnet->info.user;
+	if(*type == IP_SUBNET_TINC_ROUTE) {
+		lct_tinc_route_t *r = (lct_tinc_route_t *)subnet->info.usr.data;
 		if (r->node == NULL) {
 			node_t *n = lookup_node(r->dest);
 			r->node = n;
 		}
-		return n;
+		return r->node;
 	}
 	return NULL;
 }
@@ -295,45 +299,3 @@ void lct_del_node(node_t *node)
 	}
 }
 
-void init_localoffload(char *filename)
-{
-	int num = 0;
-	int rc;
-	setlocale(LC_NUMERIC, "");
-	if (!(p = (lct_subnet_t *)calloc(sizeof(lct_subnet_t), BGP_MAX_ENTRIES))) {
-		return;
-	}
-	if (0 > (rc = read_prefix_table(filename, &p[0], BGP_MAX_ENTRIES))) {
-		return;
-	}
-	num += rc;
-
-	subnet_mask(p, num);
-	qsort(p, num, sizeof(lct_subnet_t), subnet_cmp);
-	num -= subnet_dedup(p, num);
-	p = realloc(p, num * sizeof(lct_subnet_t));
-	lct_ip_stats_t *stats = (lct_ip_stats_t *) calloc(num, sizeof(lct_ip_stats_t));
-	subnet_prefix(p, stats, num);
-
-	memset(&t, 0, sizeof(lct_t));
-	lct_build(&t, p, num);
-	success = 1;
-}
-
-int match_localoffload(uint32_t dest)
-{
-	lct_subnet_t *p, *subnet = NULL;
-	subnet = lct_find(&t, dest);
-	if (subnet)
-		return 1;
-	return 0;
-}
-
-void clean_localoffload()
-{
-	if (success == 0)
-		return;
-	lct_free(&t);
-	free(p);
-	success = 0;
-}

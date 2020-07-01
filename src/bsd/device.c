@@ -338,6 +338,11 @@ static void close_device(void) {
 	default:
 		close(device_fd);
 	}
+	struct ifreq ifr;
+	memset(&ifr, '\0', sizeof(ifr));
+	strcpy(ifr.ifr_name, iface);
+        int sock = socket(PF_INET, SOCK_STREAM, 0);
+        ioctl(sock, SIOCIFDESTROY, &ifr);
 
 	device_fd = -1;
 
