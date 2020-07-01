@@ -23,7 +23,7 @@
 #define HAVE_ASPRINTF 1
 
 /* Define to 1 if you have the `BN_GENCB_new' function. */
-/* #undef HAVE_BN_GENCB_NEW */
+#define HAVE_BN_GENCB_NEW 1
 
 /* Unknown BSD variant */
 /* #undef HAVE_BSD */
@@ -56,7 +56,7 @@
 #define HAVE_DECL_RES_INIT 1
 
 /* Define to 1 if you have the `devname' function. */
-/* #undef HAVE_DEVNAME */
+#define HAVE_DEVNAME 1
 
 /* Define to 1 if you have the <dirent.h> header file. */
 #define HAVE_DIRENT_H 1
@@ -77,7 +77,7 @@
 #define HAVE_FCHMOD 1
 
 /* Define to 1 if you have the `fdevname' function. */
-/* #undef HAVE_FDEVNAME */
+#define HAVE_FDEVNAME 1
 
 /* Define to 1 if you have the `flock' function. */
 #define HAVE_FLOCK 1
@@ -86,7 +86,7 @@
 #define HAVE_FORK 1
 
 /* FreeBSD */
-/* #undef HAVE_FREEBSD */
+#define HAVE_FREEBSD 1
 
 /* Define to 1 if you have the <gcrypt.h> header file. */
 /* #undef HAVE_GCRYPT_H */
@@ -101,7 +101,7 @@
 #define HAVE_GETTIMEOFDAY 1
 
 /* Define to 1 if you have the `HMAC_CTX_new' function. */
-/* #undef HAVE_HMAC_CTX_NEW */
+#define HAVE_HMAC_CTX_NEW 1
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
@@ -116,10 +116,10 @@
 /* #undef HAVE_LIBVDEPLUG_DYN_H */
 
 /* Linux */
-#define HAVE_LINUX 1
+/* #undef HAVE_LINUX */
 
 /* Define to 1 if you have the <linux/if_tun.h> header file. */
-#define HAVE_LINUX_IF_TUN_H 1
+/* #undef HAVE_LINUX_IF_TUN_H */
 
 /* enable lzo compression support */
 #define HAVE_LZO 1
@@ -185,7 +185,7 @@
 #define HAVE_NETINET_TCP_H 1
 
 /* Define to 1 if you have the <netpacket/packet.h> header file. */
-#define HAVE_NETPACKET_PACKET_H 1
+/* #undef HAVE_NETPACKET_PACKET_H */
 
 /* Define to 1 if you have the <net/ethernet.h> header file. */
 #define HAVE_NET_ETHERNET_H 1
@@ -197,13 +197,13 @@
 #define HAVE_NET_IF_H 1
 
 /* Define to 1 if you have the <net/if_tap.h> header file. */
-/* #undef HAVE_NET_IF_TAP_H */
+#define HAVE_NET_IF_TAP_H 1
 
 /* Define to 1 if you have the <net/if_tun.h> header file. */
-/* #undef HAVE_NET_IF_TUN_H */
+#define HAVE_NET_IF_TUN_H 1
 
 /* Define to 1 if you have the <net/if_types.h> header file. */
-/* #undef HAVE_NET_IF_TYPES_H */
+#define HAVE_NET_IF_TYPES_H 1
 
 /* Define to 1 if you have the <net/if_utun.h> header file. */
 /* #undef HAVE_NET_IF_UTUN_H */
@@ -260,7 +260,7 @@
 #define HAVE_RESOLV_H 1
 
 /* Define to 1 if you have the `RSA_set0_key' function. */
-/* #undef HAVE_RSA_SET0_KEY */
+#define HAVE_RSA_SET0_KEY 1
 
 /* Solaris/SunOS */
 /* #undef HAVE_SOLARIS */
@@ -361,9 +361,6 @@
 /* Location of lzo1x.h */
 #define LZO1X_H <lzo/lzo1x.h>
 
-/* Define to 1 if your C compiler doesn't accept -c and -o together. */
-/* #undef NO_MINUS_C_MINUS_O */
-
 /* Name of package */
 #define PACKAGE "tinc"
 
@@ -431,9 +428,6 @@
 
 /* Defined if the __malloc__ attribute is not supported. */
 /* #undef __malloc__ */
-
-/* Defined if the __nonnull__ attribute is not supported. */
-/* #undef __nonnull__ */
 
 /* Defined if the __warn_unused_result__ attribute is not supported. */
 /* #undef __warn_unused_result__ */

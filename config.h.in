@@ -360,9 +360,6 @@
 /* Location of lzo1x.h */
 #undef LZO1X_H
 
-/* Define to 1 if your C compiler doesn't accept -c and -o together. */
-#undef NO_MINUS_C_MINUS_O
-
 /* Name of package */
 #undef PACKAGE
 
@@ -430,9 +427,6 @@
 
 /* Defined if the __malloc__ attribute is not supported. */
 #undef __malloc__
-
-/* Defined if the __nonnull__ attribute is not supported. */
-#undef __nonnull__
 
 /* Defined if the __warn_unused_result__ attribute is not supported. */
 #undef __warn_unused_result__
