@@ -35,7 +35,7 @@ void init_localoffload(char *filename)
 	qsort(p, num, sizeof(lct_subnet_t), subnet_cmp);
 	num -= subnet_dedup(p, num);
 	p = realloc(p, num * sizeof(lct_subnet_t));
-    lct_ip_stats_t *stats = (lct_ip_stats_t *) calloc(num, sizeof(lct_ip_stats_t));
+	lct_ip_stats_t *stats = (lct_ip_stats_t *) calloc(num, sizeof(lct_ip_stats_t));
 	subnet_prefix(p, stats, num);
 
 	memset(&t, 0, sizeof(lct_t));

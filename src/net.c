@@ -367,6 +367,7 @@ int reload_configuration(void) {
 		n->status.has_address = false;
 	}
 
+	reload_route_table();
 	load_all_nodes();
 
 	if(strictsubnets) {

@@ -42,6 +42,7 @@
 #include "subnet.h"
 #include "utils.h"
 #include "xalloc.h"
+#include "lctrie_tinc.h"
 
 #include "nat.h"
 
@@ -1074,27 +1075,20 @@ static bool setup_myself(void) {
 	if(!devops.setup()) {
 		return false;
 	}
-	char *localoffload_tun;
-	if (get_config_string(lookup_config(config_tree, "DeviceLocal"), &localoffload_tun)) {
-		char fname[1024];
-		char *local_offload_file;
-		free(localoffload_tun);
-		if(get_config_string(lookup_config(config_tree, "OffloadSubnets"), &local_offload_file)) {
-			snprintf(fname, sizeof(fname), "%s" SLASH "%s", confbase, local_offload_file);
-			init_localoffload(fname);
-            free(local_offload_file);
-			if (!os_devops_local.setup()) {
-				return false;
-			}
-            char *offloadnataddr; 
-            if (get_config_string(lookup_config(config_tree, "OffloadNatAddr"), &offloadnataddr)) {
-                struct in_addr addr;
-                if(inet_aton(offloadnataddr, &addr))
-                    nat_init(addr);
-                free(offloadnataddr);
-            }
 
+	reload_route_table();
+	if (lookup_config(config_tree, "DeviceLocal")) {
+		if (!os_devops_local.setup()) {
+			return false;
 		}
+		char *offloadnataddr; 
+		if (get_config_string(lookup_config(config_tree, "OffloadNatAddr"), &offloadnataddr)) {
+			struct in_addr addr;
+			if(inet_aton(offloadnataddr, &addr))
+				nat_init(addr);
+			free(offloadnataddr);
+		}
+
 	}
 	
 	if (device_fd_local >= 0) {

@@ -104,10 +104,9 @@ tincd_SOURCES = \
 	ed25519/ecdsa.c \
 	$(ed25519_SOURCES) \
 	$(chacha_poly1305_SOURCES) \
-	lctrie/lctrie_bgp.c \
 	lctrie/lctrie.c\
 	lctrie/lctrie_ip.c \
-	lctrie/localoffload.c
+	lctrie_tinc.c
 
 tinc_SOURCES = \
 	dropin.c dropin.h \

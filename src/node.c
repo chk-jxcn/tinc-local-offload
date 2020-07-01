@@ -30,6 +30,7 @@
 #include "splay_tree.h"
 #include "utils.h"
 #include "xalloc.h"
+#include "lctrie_tinc.h"
 
 #include "ed25519/sha512.h"
 
@@ -126,6 +127,7 @@ void node_add(node_t *n) {
 
 	splay_insert(node_tree, n);
 	splay_insert(node_id_tree, n);
+	lct_add_node(n);
 }
 
 void node_del(node_t *n) {
@@ -141,6 +143,7 @@ void node_del(node_t *n) {
 
 	splay_delete(node_id_tree, n);
 	splay_delete(node_tree, n);
+	lct_del_node(n);
 }
 
 node_t *lookup_node(char *name) {

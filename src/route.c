@@ -627,22 +627,32 @@ static void fragment_ipv4_packet(node_t *dest, vpn_packet_t *packet, length_t et
 }
 
 static void route_ipv4(node_t *source, vpn_packet_t *packet) {
+	uint32_t type = 0;
 	if(!checklength(source, packet, ether_size + ip_size)) {
 		return;
 	}
-
-	subnet_t *subnet;
+	subnet_t *subnet = NULL;
 	node_t *via;
 	ipv4_t dest;
 
 	memcpy(&dest, &DATA(packet)[30], sizeof(dest));
-	subnet = lookup_subnet_ipv4(&dest);
-
-    if(match_localoffload(ntohl(*(uint32_t*) dest.x))) {
-        nat_out(&DATA(packet)[14], MTU - 14);
-        os_devops_local.write(packet); 
-        return;
-    }
+	
+	// first search local route
+	node_t *n = lct_route(address, &type);
+	if (*type == IP_SUBNET_TINC_LOCAL) {
+		if (source == myself) {
+			nat_out(&DATA(packet)[14], MTU - 14);
+			os_devops_local.write(packet);
+			return;	
+		}
+	} else if (*type == IP_SUBNET_TINC_ROUTE) {
+		if (n) {
+			subnet = alloca(sizeof(subnet_t));
+			subnet->owner = n;
+		}
+	}
+	if (!subnet)
+		subnet = lookup_subnet_ipv4(&dest);
 
 	if(!subnet) {
 		logger(DEBUG_TRAFFIC, LOG_WARNING, "Cannot route packet from %s (%s): unknown IPv4 destination address %d.%d.%d.%d",
@@ -654,6 +664,14 @@ static void route_ipv4(node_t *source, vpn_packet_t *packet) {
 
 		route_ipv4_unreachable(source, packet, ether_size, ICMP_DEST_UNREACH, ICMP_NET_UNKNOWN);
 		return;
+	}
+
+	// replace the default route if exist
+	if (subnet->net.ipv4.prefixlength == 0) {
+		if (default_node) {
+			subnet = alloca(sizeof(subnet_t));
+			subnet->owner = default_node;
+		}	
 	}
 
 	if(!subnet->owner) {
