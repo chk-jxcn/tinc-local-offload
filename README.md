@@ -1,3 +1,8 @@
+## Next
+
+1. 在线程中处理包
+2. 为本地路由的包增加一个type
+
 ## New feature: local route (2020-07)
 发送sptps packet的时候，tinc会首先在本地route，寻找目标node，然后把(source, dest)放在压缩的packet前，这样下一跳收到包后就可以不解压直接根据dest id来确定是不是要转发到下一个节点。
 如果dest id是自己则再路由一次，路由后可能发给自己或者发给别的节点(如果设置StrictSubnets，每个节点的路由表并非一定一致)
