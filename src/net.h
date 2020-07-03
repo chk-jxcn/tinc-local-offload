@@ -157,6 +157,7 @@ extern bool disablebuggypeers;
 extern int contradicting_add_edge;
 extern int contradicting_del_edge;
 extern time_t last_config_check;
+extern bool sptpsonly;
 
 extern char *proxyhost;
 extern char *proxyport;

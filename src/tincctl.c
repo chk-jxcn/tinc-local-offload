@@ -1791,6 +1791,7 @@ const var_t variables[] = {
 	{"PublicKeyFile", VAR_SERVER | VAR_HOST | VAR_OBSOLETE},
 	{"Subnet", VAR_HOST | VAR_MULTIPLE | VAR_SAFE},
 	{"TCPOnly", VAR_SERVER | VAR_HOST},
+	{"SPTPSOnly", VAR_SERVER | VAR_HOST},
 	{"Weight", VAR_HOST | VAR_SAFE},
 	{NULL, 0}
 };

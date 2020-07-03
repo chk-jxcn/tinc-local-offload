@@ -73,6 +73,8 @@ int udp_discovery_keepalive_interval = 10;
 int udp_discovery_interval = 2;
 int udp_discovery_timeout = 30;
 
+bool sptpsonly = false;
+
 #define MAX_SEQNO 1073741824
 
 static void try_fix_mtu(node_t *n) {
@@ -613,13 +615,11 @@ static void send_sptps_packet(node_t *n, vpn_packet_t *origpkt) {
 	   sending the message through any intermediate nodes. */
 	/* always send via sptps because we want the DSTID store in packet */
 	sptps_send_record(&n->sptps, type, DATA(origpkt) + offset, origpkt->len - offset);
-	/*
-	if(n->connection && origpkt->len > n->minmtu) {
+	if(!sptpsonly && n->connection && origpkt->len > n->minmtu) {
 		send_tcppacket(n->connection, origpkt);
 	} else {
 		sptps_send_record(&n->sptps, type, DATA(origpkt) + offset, origpkt->len - offset);
 	}
-	*/
 
 	return;
 }
@@ -1375,11 +1375,9 @@ static void try_tx_sptps(node_t *n, bool mtu) {
 	/* If n is a TCP-only neighbor, we'll only use "cleartext" PACKET
 	   messages anyway, so there's no need for SPTPS at all. */
 
-	/*
-	if(n->connection && ((myself->options | n->options) & OPTION_TCPONLY)) {
+	if(!sptpsonly && n->connection && ((myself->options | n->options) & OPTION_TCPONLY)) {
 		return;
 	}
-	*/
 
 	/* Otherwise, try to do SPTPS authentication with n if necessary. */
 

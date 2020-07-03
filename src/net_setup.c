@@ -557,6 +557,15 @@ bool setup_myself_reloadable(void) {
 	get_config_bool(lookup_config(config_tree, "DirectOnly"), &directonly);
 	get_config_bool(lookup_config(config_tree, "LocalDiscovery"), &localdiscovery);
 
+	get_config_bool(lookup_config(config_tree, "SPTPSOnly"), &sptpsonly);
+
+	if (sptpsonly) {
+		// if send up sptpsonly then we must enable tcponly and disable udp discovery
+		myself->options |= OPTION_TCPONLY;
+		myself->options |= OPTION_INDIRECT;
+		udp_discovery = false;
+	}
+
 	if(get_config_string(lookup_config(config_tree, "Mode"), &rmode)) {
 		if(!strcasecmp(rmode, "router")) {
 			routing_mode = RMODE_ROUTER;
