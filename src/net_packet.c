@@ -1062,6 +1062,7 @@ bool receive_sptps_record(void *handle, uint8_t type, const void *data, uint16_t
 	
 	/* if packet receive from sptps, and to = myself, then it must be send to myself
 	 * Not safe although */
+	clamp_mss(from, myself, &inpkt);
 	send_packet(myself, &inpkt);
 	//receive_packet(from, &inpkt);
 	return true;
