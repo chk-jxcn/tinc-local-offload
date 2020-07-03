@@ -396,7 +396,7 @@ static bool do_decrement_ttl(node_t *source, vpn_packet_t *packet) {
 	}
 }
 
-static void clamp_mss(const node_t *source, const node_t *via, vpn_packet_t *packet) {
+void clamp_mss(const node_t *source, const node_t *via, vpn_packet_t *packet) {
 	if(!source || !via || !(via->options & OPTION_CLAMP_MSS)) {
 		return;
 	}
