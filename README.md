@@ -1,3 +1,16 @@
+## New feature: local route (2020-07)
+发送sptps packet的时候，tinc会首先在本地route，寻找目标node，然后把(source, dest)放在压缩的packet前，这样下一跳收到包后就可以不解压直接根据dest id来确定是不是要转发到下一个节点。
+如果dest id是自己则再路由一次，路由后可能发给自己或者发给别的节点(如果设置StrictSubnets，每个节点的路由表并非一定一致)
+为了解决如下需求， 增加本地路由的feature：
+1. 想要每个节点的接口地址被广播，即不能设置StrictSubnets
+2. 根据目的IP来路由包到不同的节点，比如大陆地址只到大陆的节点，但是不能让tinc的路由表太大，否则遍历路由表会花费太多时间(foreach in splay tree)
+
+具体实现：
+1. 增加route文件夹，里面每个文件用主机名命名，每一行都是一个subnet：x.x.x.x/prefixlen，tinc启动或reload时加载到lctire，成为本地路由表
+2. 在搜索tinc路由表之前，搜索本地路由表，如果找得到，则通过sptps协议发送，不再使用直接发送tcp及udp报文
+3. 节点收到sptps packet后，如果DSTID = myself，则直接发送到接口，不再做一次route
+
+
 # Tinc 本地卸载分流方案
 首先，请记住5月31日这个日子，防火墙从这一天开始彻底疯了。。。
 
