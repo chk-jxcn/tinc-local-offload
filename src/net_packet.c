@@ -614,7 +614,6 @@ static void send_sptps_packet(node_t *n, vpn_packet_t *origpkt) {
 	   We don't really care about end-to-end security since we're not
 	   sending the message through any intermediate nodes. */
 	/* always send via sptps because we want the DSTID store in packet */
-	sptps_send_record(&n->sptps, type, DATA(origpkt) + offset, origpkt->len - offset);
 	if(!sptpsonly && n->connection && origpkt->len > n->minmtu) {
 		send_tcppacket(n->connection, origpkt);
 	} else {
