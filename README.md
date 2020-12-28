@@ -1,6 +1,21 @@
 ## Next
 
 1. 在线程中处理包
+  因为资源大部分都消耗在加密解密上，所以应该把加密解密分离到其他的线程。但是由于tinc本身是单线程设计的，因此其中的数据访问并没有进行多线程的保护。不过sptps协议设计的比较简单，而且本身很容易设计成异步执行，所以我是这样想的：
+
+上半部分，处理sptps协议
+  Thread:
+  Thread pool: encrypt/decrypt
+  dequeue Thread: send a io request to libevent
+  sptps_receive_data -> in queue -> decrypt by thread pool -> dequeue
+  sptp_send_data -> in queue -> encrypt by thread pool -> dequeue
+
+下半部分，main thread中收发包
+  dequeue(io notify)-> (main thread)io watch -> sptps callback
+
+不过要注意的是，握手和其他明文包也需要按序列发送，所以也应该由thread pool来处理，但是协议中间不会发送有更新key什么的消息，我觉得只需要把DATA交给thread pool就行
+
+
 2. 为本地路由的包增加一个type
 
 ## New feature: local route (2020-07)
