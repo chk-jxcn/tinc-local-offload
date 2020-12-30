@@ -19,6 +19,37 @@
 
 不过要注意的是，握手和其他明文包也需要按序列发送，所以也应该由thread pool来处理，但是协议中间不会发送有更新key什么的消息，我觉得只需要把DATA交给thread pool就行
 
+使用sptps_speed 测试的结果, 比以前还慢了很多，感觉上是用pipe同步callback和dequeue的原因
+
+```
+-O3
+chk@T620:~/tinc-local-offload-thread/src % ./sptps_speed 1
+Generating keys for 1 seconds:           4775.39 op/s
+Ed25519 sign for 1 seconds:              4687.92 op/s
+Ed25519 verify for 1 seconds:            1457.95 op/s
+ECDH for 1 seconds:                      1167.75 op/s
+SPTPS/TCP authenticate for 1 seconds:     554.28 op/s
+SPTPS/TCP transmit for 1 seconds:         637.49 Mbit/s
+SPTPS/TCP MP transmit for 1 seconds:         504.10 Mbit/s
+SPTPS/UDP authenticate for 1 seconds:     552.58 op/s
+SPTPS/UDP transmit for 1 seconds:         642.62 Mbit/s
+
+```
+
+```
+-O0
+chk@T620:~/tinc-local-offload-thread/src % ./sptps_speed 1
+Generating keys for 1 seconds:           2258.62 op/s
+Ed25519 sign for 1 seconds:              2162.85 op/s
+Ed25519 verify for 1 seconds:             824.04 op/s
+ECDH for 1 seconds:                       610.23 op/s
+SPTPS/TCP authenticate for 1 seconds:     298.93 op/s
+SPTPS/TCP transmit for 1 seconds:         205.14 Mbit/s
+SPTPS/TCP MP transmit for 1 seconds:         279.38 Mbit/s
+SPTPS/UDP authenticate for 1 seconds:     298.59 op/s
+SPTPS/UDP transmit for 1 seconds:         205.06 Mbit/s
+
+```
 
 2. 为本地路由的包增加一个type
 
