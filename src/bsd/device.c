@@ -244,10 +244,7 @@ static bool setup_device(void) {
 		device_type = DEVICE_TYPE_TUN;
 
 	case DEVICE_TYPE_TUN:
-		{
-                        const int zero = 0;
-                        ioctl(device_fd, TUNSIFPID, &zero, sizeof(zero));
-                }
+                ioctl(device_fd, TUNSIFPID, 0);
 
 #ifdef TUNSIFHEAD
 		{
