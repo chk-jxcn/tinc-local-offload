@@ -470,6 +470,17 @@ bool id_h(connection_t *c, const char *request) {
 		send_id(c);
 	}
 
+	// reject connections
+        for(config_t *cfg = lookup_config(config_tree, "RejectTo"); cfg; cfg = lookup_config_next(config_tree, cfg)) {
+                char *rejectname;
+                get_config_string(cfg, &rejectname);
+                if (!strcmp(name, rejectname)) {
+                                free(rejectname);
+                                return false;
+                }
+        }
+
+	
 	if(c->protocol_minor >= 2) {
 		c->allow_request = ACK;
 		char label[25 + strlen(myself->name) + strlen(c->name)];
